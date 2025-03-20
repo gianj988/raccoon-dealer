@@ -5,7 +5,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
-var apiRouter = require("./routes/api");
+// var apiRouter = require("./routes/api");
 
 var app = express();
 
@@ -20,14 +20,15 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 /* questa instrada le richieste al file ./routes/index.js */
-app.use("/", indexRouter);
+// app.use("/", indexRouter);
+app.use(express.static("../raccoon-dealer"));
 /* questo sarà per le API */
-app.use("/api", apiRouter);
+// app.use("/api", apiRouter);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
+/* app.use(function (req, res, next) {
   next(createError(404));
-});
+}); */
 
 // error handler
 app.use(function (err, req, res, next) {
