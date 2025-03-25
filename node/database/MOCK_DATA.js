@@ -557,4 +557,15 @@ const demoData = [
   },
 ];
 
+const OrderStatuses = [
+  {
+    statusId: 1,
+    title: "PENDING",
+  },
+  {
+    statusId: 2,
+    title: "CONFIRMED",
+  },
+];
+export { OrderStatuses };
 export default demoData;

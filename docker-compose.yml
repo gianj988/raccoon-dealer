@@ -1,6 +1,9 @@
 services:
   mdb_service:
-    image: "mongodb/mongodb-community-server:latest"
+    #build:
+    #  context: .
+    #  dockerfile: mongo_dockerfile
+    image: "mongo:latest"
     container_name: mdb_service
     restart: always
     #ports:
@@ -10,24 +13,13 @@ services:
     volumes:
       - mdb_data:/data/db
     environment:
-      MONGO_INITDB_ROOT_USERNAME: Djan
-      MONGO_INITDB_ROOT_PASSWORD: 12345678
-      MONGO_INITDB_DATABASE: raccoon_dealer
-
-  #mongo-express:
-  #  image: mongo-express
-  #  restart: always
-  #  ports:
-  #    - 8081:8081
-  #  depends_on:
-  #    - mdb_service
-  #  external_links:
-  #    - mdb_service:mongodb
-  #  environment:
-  #    ME_CONFIG_MONGODB_ADMINUSERNAME: Djan
-  #    ME_CONFIG_MONGODB_ADMINPASSWORD: 12345678
-  #    ME_CONFIG_MONGODB_URL: mongodb://Djan:12345678@mongodb:27017/raccoon_dealer
-  #    ME_CONFIG_BASICAUTH: false
+      # nel caso si vogliano usare le funzioni di auth di mongodb
+      # per semplicità al momento teniamo così
+      #MONGO_INITDB_ROOT_USERNAME: Djan
+      #MONGO_INITDB_ROOT_PASSWORD: 12345678
+      #MONGO_INITDB_DATABASE: raccoon_dealer
+      #MONGO_NEW_USERNAME: Djan
+      #MONGO_NEW_PASSWORD: 12345678
 
   server:
     build:
@@ -50,8 +42,8 @@ services:
       PORT: 3000
       DBNAME: raccoon_dealer
       DBPORT: 27017
-      DBUSER: Djan
-      DBPSW: 12345678
+      #DBUSER: Djan
+      #DBPSW: 12345678
       DEMODE: 1
       REACT_APP_API_DOMAIN: http://127.0.0.1:3000/api
 
