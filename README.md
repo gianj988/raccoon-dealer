@@ -13,13 +13,16 @@ le impostazioni nel docker-compose file.
 AAA: questo progetto è compatibile con Ubuntu e MacOS.
 Gli unici requisiti per eseguire il file "setup.sh" sono:
 
+- avere accesso di root
 - poter eseguire i comandi dpkg e curl
 - poter eseguire files di script in bash
 - avere git installato
 
 1. clonare in una cartella questa repository pubblica su gitHub: [Raccoon Dealer Repository](https://github.com/gianj988/raccoon-dealer.git)
-2. aprire un terminale all' interno della cartella della repository
-3. eseguire il file di script bash: setup.sh
+2. entrare nella cartella che si genererà (raccoon_dealer) e creare una cartella vuota chiamata: mdb_data
+3. aprire un terminale all' interno della cartella della repository
+4. eseguire il comando "sudo chmod 777 mdb_data" per assicurarsi che la cartella sia leggibile e scrivibile da tutti
+5. eseguire il file di script bash: setup.sh
 
 Il file, se i pre-requisiti sono stati soddisfatti dovrebbe
 
