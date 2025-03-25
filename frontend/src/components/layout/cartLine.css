@@ -1,0 +1,18 @@
+.cart-line {
+  border-bottom: 1px solid #7a7a7a;
+  height: 70px;
+}
+
+.cart-line img {
+  object-fit: cover;
+  object-position: center;
+  aspect-ratio: 1;
+  border-radius: 5px;
+}
+
+@media only screen and (max-width: 576px) {
+  .cart-line {
+    border-bottom: 1px solid #7a7a7a;
+    height: unset;
+  }
+}

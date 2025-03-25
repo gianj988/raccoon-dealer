@@ -1,0 +1,78 @@
+services:
+  mdb_service:
+    image: "mongodb/mongodb-community-server:latest"
+    container_name: mdb_service
+    restart: always
+    #ports:
+    #  - "27017:27017"
+    expose:
+      - 27017
+    volumes:
+      - mdb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: Djan
+      MONGO_INITDB_ROOT_PASSWORD: 12345678
+      MONGO_INITDB_DATABASE: raccoon_dealer
+
+  #mongo-express:
+  #  image: mongo-express
+  #  restart: always
+  #  ports:
+  #    - 8081:8081
+  #  depends_on:
+  #    - mdb_service
+  #  external_links:
+  #    - mdb_service:mongodb
+  #  environment:
+  #    ME_CONFIG_MONGODB_ADMINUSERNAME: Djan
+  #    ME_CONFIG_MONGODB_ADMINPASSWORD: 12345678
+  #    ME_CONFIG_MONGODB_URL: mongodb://Djan:12345678@mongodb:27017/raccoon_dealer
+  #    ME_CONFIG_BASICAUTH: false
+
+  server:
+    build:
+      context: .
+      dockerfile: dockerfile
+    image: raccoon-dealer:latest
+    container_name: raccoon_dealer_container
+    external_links:
+      - mdb_service:mongodb
+    ports:
+      - "3000:3000"
+    expose:
+      - 3000
+    depends_on:
+      - mdb_service
+    volumes:
+      - frontend_files:/raccoon-dealer
+      - node_server_files:/server
+    environment:
+      PORT: 3000
+      DBNAME: raccoon_dealer
+      DBPORT: 27017
+      DBUSER: Djan
+      DBPSW: 12345678
+      DEMODE: 1
+      REACT_APP_API_DOMAIN: http://127.0.0.1:3000/api
+
+volumes:
+  mdb_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./mdb_data
+      o: bind
+
+  node_server_files:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./node
+      o: bind
+
+  frontend_files:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./frontend
+      o: bind

@@ -1,6 +1,4 @@
-FROM alpine:latest
-
-RUN apk update && apk add bash
+FROM node:lts-jod
 
 RUN cd /
 

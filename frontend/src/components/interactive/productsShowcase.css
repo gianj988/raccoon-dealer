@@ -1,0 +1,19 @@
+.prod-img {
+  object-fit: cover;
+  object-position: center;
+  aspect-ratio: 1;
+  border-radius: 5px;
+}
+
+.prod-card {
+  border-radius: 5px;
+}
+
+.prod-card:hover {
+  box-shadow: 0px 0px 10px #ffffff40;
+}
+
+.topbar-cart-quantity {
+  display: inline-block;
+  font-size: 0.8rem;
+}

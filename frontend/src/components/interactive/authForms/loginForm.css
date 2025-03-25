@@ -1,0 +1,21 @@
+.login-top-image {
+  max-width: 300px;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 5px;
+}
+
+.login-form,
+.signup-form {
+  display: block;
+  margin: auto;
+  max-width: 350px;
+}
+
+.border-right {
+  border-right: 1px solid #acacac;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #acacac;
+}
