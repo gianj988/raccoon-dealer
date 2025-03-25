@@ -12,14 +12,14 @@ services:
       - 27017
     volumes:
       - mdb_data:/data/db
-    environment:
-      # nel caso si vogliano usare le funzioni di auth di mongodb
-      # per semplicità al momento teniamo così
-      #MONGO_INITDB_ROOT_USERNAME: Djan
-      #MONGO_INITDB_ROOT_PASSWORD: 12345678
-      #MONGO_INITDB_DATABASE: raccoon_dealer
-      #MONGO_NEW_USERNAME: Djan
-      #MONGO_NEW_PASSWORD: 12345678
+    #environment:
+    #  # nel caso si vogliano usare le funzioni di auth di mongodb
+    #  # per semplicità al momento teniamo così
+    #  #MONGO_INITDB_ROOT_USERNAME: Djan
+    #  #MONGO_INITDB_ROOT_PASSWORD: 12345678
+    #  #MONGO_INITDB_DATABASE: raccoon_dealer
+    #  #MONGO_NEW_USERNAME: Djan
+    #  #MONGO_NEW_PASSWORD: 12345678
 
   server:
     build:
@@ -42,10 +42,10 @@ services:
       PORT: 3000
       DBNAME: raccoon_dealer
       DBPORT: 27017
-      #DBUSER: Djan
-      #DBPSW: 12345678
       DEMODE: 1
       REACT_APP_API_DOMAIN: http://127.0.0.1:3000/api
+      #DBUSER: Djan
+      #DBPSW: 12345678
 
 volumes:
   mdb_data:
