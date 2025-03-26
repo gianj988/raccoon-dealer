@@ -15,7 +15,7 @@ Gli unici requisiti per eseguire il file "setup.sh" sono:
 
 - avere accesso di root
 - poter eseguire i comandi dpkg e curl
-- (MacOS only) installare brew se non è già installato
+- (MacOS only) installare brew se non è già installato e colima
 - poter eseguire files di script in bash
 - avere git installato
 
@@ -25,17 +25,30 @@ Gli unici requisiti per eseguire il file "setup.sh" sono:
 4. eseguire il comando "sudo chmod 777 mdb_data" per assicurarsi che la cartella sia leggibile e scrivibile da tutti
 5. eseguire il file di script bash: setup.sh
 
-Il file, se i pre-requisiti sono stati soddisfatti dovrebbe
+### AAA solo MacOS
+
+installare manualmente colima, docker e docker compose,
+configurando l'avvio di docker compose correttamente
+[DOCS COLIMA](https://github.com/abiosoft/colima/blob/main/README.md)
+
+per verificare se la configurazione è corretta eseguire da terminale:
+colima status
+docker --version
+docker compose version
+
+### Che operazioni esegue il file setup.sh
+
+Il file, se i pre-requisiti sono stati soddisfatti dovrebbe eseguire le seguenti azioni
 
 #### Su ubuntu
 
 - verificare che docker e docker-compose siano installati correttamente e nel caso installarli
+- aggiornare i gruppi e inserire l'utente nel gruppo docker per l'esecuzione non-root
 - avviare docker
 - avviare il file docker-compose che farà partire i container
 
 #### Su MacOS
 
-- verificare che Colima, docker e docker-compose siano installati correttamente e nel caso installarli
 - avviare Colima se già non lo è
 - avviare docker
 - avviare il file docker-compose che farà partire i container
