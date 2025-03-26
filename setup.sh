@@ -19,7 +19,15 @@ check_directory_exists() {
 
 # Funzione per installare Docker Engine su Ubuntu
 install_docker_ubuntu() {
-  echo "INSTALLAZIONE DIPENDENZE E AVVIO RACCOON-DEALER"
+  if [ -n "$GROUPS_LIST_ADDED" ]; then
+    echo "---------------------------------------------------------------------"
+    echo "RIESECUZIONE SCRIPT DOPO L' AGGIUNTA DELL' UTENTE AL GRUPPO 'docker'"
+    echo
+  else
+    echo "------------------------------------------------"
+    echo "INSTALLAZIONE DIPENDENZE E AVVIO RACCOON-DEALER"
+    echo
+  fi
   sudo apt-get update
   sudo apt-get install ca-certificates curl
   sudo install -m 0755 -d /etc/apt/keyrings
@@ -34,20 +42,25 @@ install_docker_ubuntu() {
   sudo apt-get update
 
   sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
-  if [ -z "$GROUPS_LIST_ADDED" ]; then
-    sudo groupadd "$DOCKER_GROUP"
-    sudo usermod -aG "$DOCKER_GROUP" $USER
-    echo "Utente corrente aggiunto al gruppo docker"
+  sudo groupadd "$DOCKER_GROUP"
+  echo "check utente corrente inserito nel gruppo 'docker'..."
+  if [ -z "$(groups $USER | grep docker)" ]; then
+    if [ -z "$GROUPS_LIST_ADDED" ]; then
+      sudo usermod -aG "$DOCKER_GROUP" $USER
+      echo "Utente corrente aggiunto al gruppo docker"
 
-    export GROUP_ORIGINAL="$(id -gn)"
-    export GROUPS_LIST_ADDED=1
-    echo "reload groups"
-    # We ensure that script arguments are independently sub-quoted.
-    exec sg "$DOCKER_GROUP" "/bin/bash '$0' $(printf "'%s' " "$@")"
-  elif [ -z "$GROUP_PRIMARY_RESTORED" ]; then
-    # Rerun this script once more to restore the primary group.
-    export GROUP_PRIMARY_RESTORED=1
-    exec sg "$GROUP_ORIGINAL" "/bin/bash '$0' $(printf "'%s' " "$@")"
+      export GROUP_ORIGINAL="$(id -gn)"
+      export GROUPS_LIST_ADDED=1
+      echo "reload groups"
+      # We ensure that script arguments are independently sub-quoted.
+      exec sg "$DOCKER_GROUP" "/bin/bash '$0' $(printf "'%s' " "$@")"
+    elif [ -z "$GROUP_PRIMARY_RESTORED" ]; then
+      # Rerun this script once more to restore the primary group.
+      export GROUP_PRIMARY_RESTORED=1
+      exec sg "$GROUP_ORIGINAL" "/bin/bash '$0' $(printf "'%s' " "$@")"
+    fi
+  else
+    echo "utente corrente già inserito nel gruppo 'docker' - skip step"
   fi
 
   #if [ -d "/etc/apt/keyrings" ]; then
