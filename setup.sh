@@ -4,7 +4,7 @@
 SYSTEM=$(uname -s)
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-
+DOCKER_GROUP="docker"
 RACCOON_DEALER_IMAGE="raccoon-dealer"
 
 check_directory_exists() {
@@ -19,33 +19,50 @@ check_directory_exists() {
 
 # Funzione per installare Docker Engine su Ubuntu
 install_docker_ubuntu() {
-  echo "Installazione di Docker Engine su Ubuntu..."
+  echo "INSTALLAZIONE DIPENDENZE E AVVIO RACCOON-DEALER"
   sudo apt-get update
-  sudo apt-get install -y \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release
-  if [ -d "/etc/apt/keyrings" ]; then
-    echo "Cartella apt/keyrings già esistente"
-  else
-    sudo mkdir -p /etc/apt/keyrings
-  fi
-  if [ -f "/etc/apt/keyrings/docker.gpg" ]; then
-    echo "keyrings/docker.gpg già esistente"
-  else
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-    echo \
-      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-  fi
+  sudo apt-get install ca-certificates curl
+  sudo install -m 0755 -d /etc/apt/keyrings
+  sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+  # Add the repository to Apt sources:
+  echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+    $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
   sudo apt-get update
-  sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
-  echo "Docker Engine installato con successo su Ubuntu."
-  sudo groupadd docker
-  echo "Docker group aggiunto"
-  sudo usermod -aG docker $USER
-  echo "Utente corrente aggiunto al gruppo docker"
+
+  sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  if [ -z "$GROUPS_LIST_ADDED" ]; then
+    sudo groupadd "$DOCKER_GROUP"
+    sudo usermod -aG "$DOCKER_GROUP" $USER
+    echo "Utente corrente aggiunto al gruppo docker"
+
+    export GROUP_ORIGINAL="$(id -gn)"
+    export GROUPS_LIST_ADDED=1
+    echo "reload groups"
+    # We ensure that script arguments are independently sub-quoted.
+    exec sg "$DOCKER_GROUP" "/bin/bash '$0' $(printf "'%s' " "$@")"
+  elif [ -z "$GROUP_PRIMARY_RESTORED" ]; then
+    # Rerun this script once more to restore the primary group.
+    export GROUP_PRIMARY_RESTORED=1
+    exec sg "$GROUP_ORIGINAL" "/bin/bash '$0' $(printf "'%s' " "$@")"
+  fi
+
+  #if [ -d "/etc/apt/keyrings" ]; then
+  #  echo "Cartella apt/keyrings già esistente"
+  #else
+  #  sudo mkdir -p /etc/apt/keyrings
+  #fi
+  #if [ -f "/etc/apt/keyrings/docker.gpg" ]; then
+  #  echo "keyrings/docker.gpg già esistente"
+  #else
+  #  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  #  echo \
+  #    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  #    $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  #fi
 }
 
 # Funzione per installare Docker Engine su macOS con Colima
@@ -128,6 +145,19 @@ check_colima_and_run_compose() {
   if [ $? -ne 0 ]; then
     echo "Colima non è in esecuzione. Avvio colima."
     colima start
+  fi
+
+  if ! command -v docker compose &> /dev/null; then
+    echo "Docker Compose non trovato dopo l'installazione. Tentativo di aggiornare l'ambiente..."
+    if [ -f "$HOME/.bashrc" ]; then
+      source "$HOME/.bashrc"
+    elif [ -f "$HOME/.zshrc" ]; then
+      source "$HOME/.zshrc"
+    fi
+    if ! command -v docker compose &> /dev/null; then
+      echo "Docker Compose ancora non trovato. Verifica la configurazione della tua shell."
+      return 1
+    fi
   fi
 
   echo "Colima è in esecuzione. Avvio raccoon_dealer..."

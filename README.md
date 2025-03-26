@@ -15,6 +15,7 @@ Gli unici requisiti per eseguire il file "setup.sh" sono:
 
 - avere accesso di root
 - poter eseguire i comandi dpkg e curl
+- (MacOS only) installare brew se non è già installato
 - poter eseguire files di script in bash
 - avere git installato
 
